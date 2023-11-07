@@ -51,6 +51,11 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         }
 
+        // Return if user already exists in the database
+        if(service.getUserService().findUserByUid(uid) != null){
+            return ResponseEntity.badRequest().build();
+        }
+
         User user = new User();
         user.setUid(uid);
         user.setUsername(username);

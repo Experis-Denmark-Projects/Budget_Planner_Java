@@ -9,6 +9,7 @@ import lombok.Getter;
 @org.springframework.stereotype.Service
 @Getter
 public class Service implements IService {
+    //uses facade pattern
     private final IUserService userService;
     private final ICategoryService categoryService;
     private final IExpenseService expenseService;
