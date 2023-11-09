@@ -25,6 +25,7 @@ public abstract class CategoryDTOToCategoryMapper {
 
     @Named("expenseIdsToExpenses")
     public Set<Expense> mapExpenseIdsToExpenses(Collection<Integer> expenseIds){
+        if(expenseIds == null) return null;
         return expenseIds.stream().map(expenseService::findById).collect(Collectors.toSet());
     }
 }

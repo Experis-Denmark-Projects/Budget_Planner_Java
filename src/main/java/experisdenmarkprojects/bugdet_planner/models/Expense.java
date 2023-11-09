@@ -14,13 +14,13 @@ public class Expense {
     @Column(name = "expense_id")
     private int id;
 
-    @Column(name = "expense_name")
+    @Column(name = "expense_name",nullable = false)
     private String expenseName;
 
     @Column()
     private int amount;
 
     @ManyToOne()
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id", nullable = false)
     private Category category;
 }

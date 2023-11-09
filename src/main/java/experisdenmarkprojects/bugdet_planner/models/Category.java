@@ -3,6 +3,8 @@ package experisdenmarkprojects.bugdet_planner.models;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import java.util.Set;
 
@@ -20,7 +22,7 @@ public class Category {
     private String name;
 
     @ManyToOne()
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "category")

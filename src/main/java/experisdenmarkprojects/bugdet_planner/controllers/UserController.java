@@ -29,7 +29,6 @@ public class UserController {
     }
 
     /***** User Controller Mappings ****/
-
     @GetMapping("/private/user")
     public ResponseEntity<UserDTO> getUser(@AuthenticationPrincipal Jwt jwt){
         String uid = jwt.getSubject().split("\\|")[1];
@@ -90,7 +89,6 @@ public class UserController {
     }
 
     /***** Category Controller Mappings ****/
-
     @GetMapping("/private/user/category")
     public ResponseEntity<Collection<CategoryDTO>> getCategories(@AuthenticationPrincipal Jwt jwt){
         String uid = jwt.getSubject().split("\\|")[1];
@@ -125,10 +123,12 @@ public class UserController {
         String uid = jwt.getSubject().split("\\|")[1];
         User user = service.getUserService().findUserByUid(uid);
         if(user != null){
-            Category category = service.getCategoryService().create(mapper.getCategoryDTOToCategoryMapper().categoryDTOToCategory(categoryDTO));
-            if(category != null){
-                return ResponseEntity.ok(mapper.getCategoryToCategoryDTOMapper().categoryToCategoryDTO(category));
-            }
+            Category category = mapper.getCategoryDTOToCategoryMapper().categoryDTOToCategory(categoryDTO);
+            category.setUser(user);
+            Category newCategory = service.getCategoryService().create(category);
+            CategoryDTO newCategoryDTO = mapper.getCategoryToCategoryDTOMapper().categoryToCategoryDTO(newCategory);
+
+            return ResponseEntity.ok(newCategoryDTO);
         }
         return ResponseEntity.badRequest().build();
     }
@@ -161,67 +161,64 @@ public class UserController {
     }
 
     /***** Expense Controller Mappings ****/
-
-    @GetMapping("/private/user/expense")
-    public ResponseEntity<Collection<ExpenseDTO>> getExpenses(@AuthenticationPrincipal Jwt jwt){
+    @GetMapping("/private/user/category/{id}/expense")
+    public ResponseEntity<Collection<ExpenseDTO>> getExpenses(@AuthenticationPrincipal Jwt jwt, @PathVariable int id){
         String uid = jwt.getSubject().split("\\|")[1];
         User user = service.getUserService().findUserByUid(uid);
         if(user != null){
-            Collection<ExpenseDTO> expenseDTOS = mapper.getExpenseToExpenseDTOMapper().expenseToExpenseDTO(service.getExpenseService().findAll());
-            if(expenseDTOS != null){
-                return ResponseEntity.ok(expenseDTOS);
+            Category category = service.getCategoryService().findById(id);
+            if(category != null){
+                Collection<ExpenseDTO> expenseDTOS = mapper.getExpenseToExpenseDTOMapper().expenseToExpenseDTO(category.getExpenses());
+                if(expenseDTOS != null){
+                    return ResponseEntity.ok(expenseDTOS);
+                }
             }
         }
 
         return ResponseEntity.badRequest().build();
     }
 
-    @GetMapping("/private/user/expense/{id}")
-    public ResponseEntity<ExpenseDTO> getExpense(@AuthenticationPrincipal Jwt jwt, @PathVariable int id){
+    @PostMapping("/private/user/category/{id}/expense")
+    public ResponseEntity<ExpenseDTO> createExpense(@AuthenticationPrincipal Jwt jwt, @PathVariable int id, @RequestBody ExpenseDTO expenseDTO){
         String uid = jwt.getSubject().split("\\|")[1];
         User user = service.getUserService().findUserByUid(uid);
         if(user != null){
-            ExpenseDTO expenseDTO = mapper.getExpenseToExpenseDTOMapper().expenseToExpenseDTO(service.getExpenseService().findById(id));
-            if(expenseDTO != null){
-                return ResponseEntity.ok(expenseDTO);
+
+            Category category = service.getCategoryService().findById(id);
+
+            if(category != null && user.getId() == category.getUser().getId()){
+                Expense expense = mapper.getExpenseDTOToExpenseMapper().expenseDTOToExpense(expenseDTO);
+                expense = service.getExpenseService().create(expense);
+                if(expense != null){
+                    expense.setCategory(category);
+                    expenseDTO = mapper.getExpenseToExpenseDTOMapper().expenseToExpenseDTO(service.getExpenseService().create(expense));
+                    return expenseDTO != null ? ResponseEntity.ok(expenseDTO) : ResponseEntity.badRequest().build();
+                }
             }
         }
 
         return ResponseEntity.badRequest().build();
     }
 
-    @PostMapping("/private/user/expense")
-    public ResponseEntity<ExpenseDTO> createExpense(@AuthenticationPrincipal Jwt jwt, ExpenseDTO expenseDTO){
+    @PutMapping("/private/user/category/{id}/expense")
+    public ResponseEntity<ExpenseDTO> updateExpense(@AuthenticationPrincipal Jwt jwt, @PathVariable int id, @RequestBody ExpenseDTO expenseDTO){
         String uid = jwt.getSubject().split("\\|")[1];
         User user = service.getUserService().findUserByUid(uid);
         if(user != null){
-            Expense expense = mapper.getExpenseDTOToExpenseMapper().expenseDTOToExpense(expenseDTO);
-            if(expense != null){
-                expenseDTO = mapper.getExpenseToExpenseDTOMapper().expenseToExpenseDTO(service.getExpenseService().create(expense));
-                return expenseDTO != null ? ResponseEntity.ok(expenseDTO) : ResponseEntity.badRequest().build();
+            Category category = service.getCategoryService().findById(id);
+            if(category != null && user.getId() == category.getUser().getId()){
+                Expense expense = mapper.getExpenseDTOToExpenseMapper().expenseDTOToExpense(expenseDTO);
+                if(expense != null && service.getExpenseService().findById(expense.getId()) != null){
+                    service.getExpenseService().update(expense);
+                    return ResponseEntity.noContent().build();
+                }
             }
         }
 
         return ResponseEntity.badRequest().build();
     }
 
-    @PutMapping("/private/user/expense")
-    public ResponseEntity<ExpenseDTO> updateExpense(@AuthenticationPrincipal Jwt jwt, ExpenseDTO expenseDTO){
-        String uid = jwt.getSubject().split("\\|")[1];
-        User user = service.getUserService().findUserByUid(uid);
-        if(user != null){
-            Expense expense = mapper.getExpenseDTOToExpenseMapper().expenseDTOToExpense(expenseDTO);
-
-            if(expense != null){
-                service.getExpenseService().update(expense);
-                return ResponseEntity.noContent().build();
-            }
-        }
-
-        return ResponseEntity.badRequest().build();
-    }
-
-    @DeleteMapping("/private/user/expense/{id}")
+    @DeleteMapping("/private/user/category/expense/{id}")
     public ResponseEntity<ExpenseDTO> deleteExpense(@AuthenticationPrincipal Jwt jwt, @PathVariable int id){
         String uid = jwt.getSubject().split("\\|")[1];
         User user = service.getUserService().findUserByUid(uid);
