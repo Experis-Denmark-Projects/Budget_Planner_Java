@@ -1,6 +1,5 @@
 package experisdenmarkprojects.bugdet_planner.models.dtos;
 
-import experisdenmarkprojects.bugdet_planner.models.Category;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class ExpenseDTO {
     private int id;
-    private String expenseName;
+    private String name;
     private int amount;
-    private int categoryId;
+    private int category;
 }

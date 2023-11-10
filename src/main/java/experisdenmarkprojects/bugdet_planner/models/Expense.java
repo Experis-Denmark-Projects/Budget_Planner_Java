@@ -15,7 +15,7 @@ public class Expense {
     private int id;
 
     @Column(name = "expense_name",nullable = false)
-    private String expenseName;
+    private String name;
 
     @Column()
     private int amount;
