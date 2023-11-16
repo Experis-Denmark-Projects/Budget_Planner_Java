@@ -157,7 +157,7 @@ public class UserController {
             // Delete Expenses before deleting the category
             Category category = service.getCategoryService().findById(id);
             Collection<Expense> expenses = category.getExpenses();
-            expenses.forEach(expense -> service.getCategoryService().deleteById(expense.getId()));
+            expenses.forEach(expense -> service.getExpenseService().deleteById(expense.getId()));
             service.getCategoryService().deleteById(id);
             return ResponseEntity.noContent().build();
         }
