@@ -18,7 +18,7 @@ public class Expense {
     private String name;
 
     @Column()
-    private int amount;
+    private float amount;
 
     @ManyToOne()
     @JoinColumn(name = "category_id", referencedColumnName = "category_id", nullable = false)

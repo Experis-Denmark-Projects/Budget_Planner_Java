@@ -8,6 +8,6 @@ import lombok.Setter;
 public class ExpenseDTO {
     private int id;
     private String name;
-    private int amount;
+    private float amount;
     private int category;
 }
