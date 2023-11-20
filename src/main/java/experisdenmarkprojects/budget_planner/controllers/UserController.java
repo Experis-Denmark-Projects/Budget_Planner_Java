@@ -18,7 +18,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping(path = "/api/v1")
-@CrossOrigin(value = "http://localhost:4200")
+@CrossOrigin(value = {"http://localhost:4200", "https://budget-planner-app.azurewebsites.net"})
 public class UserController {
     private final IService service;
     private final IMapper mapper;
