@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:latest
+    network_mode: bridge
+    container_name: budget-planner-postgres
+    expose:
+      - 5432
+    environment:
+      POSTGRES_DB: BudgetPlanner
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  spring-app:
+    environment:
+      - "POSTGRESQLCONNSTR_DB_URL=postgresql://budget-planner-postgres:5432/BudgetPlanner?user=postgres&password=postgres"
+      - "HIBERNATE_DDL=create"
+      - "DB_SEED=always"
+      - "SPRING_PROFILE=dev"
+      - "server.port=8080"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    network_mode: bridge
+    container_name: budget-planner-spring-app
+    expose:
+      - 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    links:
+      - postgres
