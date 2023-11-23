@@ -9,6 +9,6 @@ import java.util.Set;
 public class CategoryDTO {
     private int id;
     private String name;
-    private int user;
+    private Set<Integer> users;
     private Set<Integer> expenses;
 }

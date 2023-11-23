@@ -8,6 +8,7 @@ import experisdenmarkprojects.budget_planner.models.dtos.CategoryDTO;
 import experisdenmarkprojects.budget_planner.models.dtos.ExpenseDTO;
 import experisdenmarkprojects.budget_planner.models.dtos.UserDTO;
 import experisdenmarkprojects.budget_planner.services.interfaces.IService;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -117,6 +118,7 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
+    @Transactional
     @PostMapping("/private/user/category")
     public ResponseEntity<CategoryDTO> createCategory(@AuthenticationPrincipal Jwt jwt, @RequestBody CategoryDTO categoryDTO){
 
@@ -124,8 +126,10 @@ public class UserController {
         User user = service.getUserService().findUserByUid(uid);
         if(user != null){
             Category category = mapper.getCategoryDTOToCategoryMapper().categoryDTOToCategory(categoryDTO);
-            category.setUser(user);
+            //category.setUser(user);
+            category.getUsers().add(user);
             Category newCategory = service.getCategoryService().create(category);
+            user.getCategories().add(newCategory);
             CategoryDTO newCategoryDTO = mapper.getCategoryToCategoryDTOMapper().categoryToCategoryDTO(newCategory);
 
             return ResponseEntity.ok(newCategoryDTO);
@@ -209,8 +213,9 @@ public class UserController {
         if(user != null){
 
             Category category = service.getCategoryService().findById(id);
+            boolean isUser = user.getCategories().stream().anyMatch(c -> c.getId() == id);
 
-            if(category != null && user.getId() == category.getUser().getId()){
+            if(category != null && isUser){
                 Expense expense = mapper.getExpenseDTOToExpenseMapper().expenseDTOToExpense(expenseDTO);
                 expense = service.getExpenseService().create(expense);
                 if(expense != null){
@@ -230,7 +235,8 @@ public class UserController {
         User user = service.getUserService().findUserByUid(uid);
         if(user != null){
             Category category = service.getCategoryService().findById(id);
-            if(category != null && user.getId() == category.getUser().getId()){
+            boolean isUser = user.getCategories().stream().anyMatch(c -> c.getId() == id);
+            if(category != null && isUser){
                 Expense expense = mapper.getExpenseDTOToExpenseMapper().expenseDTOToExpense(expenseDTO);
                 if(expense != null && service.getExpenseService().findById(expense.getId()) != null){
                     service.getExpenseService().update(expense);

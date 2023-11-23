@@ -2,19 +2,22 @@ package experisdenmarkprojects.budget_planner.mappers;
 
 import experisdenmarkprojects.budget_planner.models.Category;
 import experisdenmarkprojects.budget_planner.models.Expense;
+import experisdenmarkprojects.budget_planner.models.User;
 import experisdenmarkprojects.budget_planner.models.dtos.CategoryDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface ICategoryToCategoryDTOMapper {
 
-    @Mapping(target = "user", source = "user.id")
+    //@Mapping(target = "user", source = "user.id")
+    @Mapping(target = "users", qualifiedByName = "usersToUserIds")
     @Mapping(target = "expenses", qualifiedByName = "expensesToExpenseIds")
     CategoryDTO categoryToCategoryDTO(Category category);
 
@@ -25,5 +28,11 @@ public interface ICategoryToCategoryDTOMapper {
         if(expenses == null ) return null;
 
         return expenses.stream().map(Expense::getId).collect(Collectors.toSet());
+    }
+
+    @Named(value = "usersToUserIds")
+    default  Set<Integer> mapUsers(Set<User> users){
+        if(users == null) return new HashSet<>();
+        return users.stream().map(User::getId).collect(Collectors.toSet());
     }
 }

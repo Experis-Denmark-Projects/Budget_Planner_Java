@@ -3,6 +3,7 @@ package experisdenmarkprojects.budget_planner.models;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.Set;
 
 import java.util.Set;
 
@@ -19,9 +20,8 @@ public class Category {
     @Column(name = "category_name")
     private String name;
 
-    @ManyToOne()
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private User user;
+    @ManyToMany(mappedBy = "categories")
+    private Set<User> users;
 
     @OneToMany(mappedBy = "category")
     private Set<Expense> expenses;

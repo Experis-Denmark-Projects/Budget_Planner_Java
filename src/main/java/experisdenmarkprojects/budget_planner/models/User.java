@@ -28,6 +28,11 @@ public class User {
     @Column(name = "total_budget")
     private int totalBudget;
 
-    @OneToMany(mappedBy = "user")
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "user_category",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "category_id")}
+    )
     private Set<Category> categories;
 }

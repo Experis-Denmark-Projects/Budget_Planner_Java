@@ -14,6 +14,7 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("http://localhost:4200");
+        config.addAllowedOrigin("https://budget-planner-app.azurewebsites.net");
         config.addAllowedHeader("Content-Type");
         config.addAllowedHeader("Authorization");
         config.setAllowCredentials(true);
