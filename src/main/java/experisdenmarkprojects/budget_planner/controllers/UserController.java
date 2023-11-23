@@ -98,7 +98,7 @@ public class UserController {
         String uid = jwt.getSubject().split("\\|")[1];
         User user = service.getUserService().findUserByUid(uid);
         if(user != null){
-            Collection<Category> categories = service.getCategoryService().findAll();
+            Collection<Category> categories = user.getCategories();
             if(categories != null){
                 return ResponseEntity.ok(mapper.getCategoryToCategoryDTOMapper().categoryToCategoryDTO(categories));
             }
