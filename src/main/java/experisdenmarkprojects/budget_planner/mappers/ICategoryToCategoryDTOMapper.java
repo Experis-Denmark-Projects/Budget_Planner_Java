@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 public interface ICategoryToCategoryDTOMapper {
 
     //@Mapping(target = "user", source = "user.id")
-    @Mapping(target = "users", qualifiedByName = "usersToUserIds")
     @Mapping(target = "expenses", qualifiedByName = "expensesToExpenseIds")
     CategoryDTO categoryToCategoryDTO(Category category);
 

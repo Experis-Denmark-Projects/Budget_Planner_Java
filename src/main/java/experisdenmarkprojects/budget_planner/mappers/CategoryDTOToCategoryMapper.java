@@ -25,7 +25,7 @@ public abstract class CategoryDTOToCategoryMapper {
     IUserService userService;
 
     //@Mapping(target = "user.id", source = "user")
-    @Mapping(target = "users", qualifiedByName = "userIdsToUsers")
+
     @Mapping(target = "expenses", qualifiedByName = "expenseIdsToExpenses")
     public abstract Category categoryDTOToCategory(CategoryDTO categoryDTO);
 

@@ -118,7 +118,6 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-    @Transactional
     @PostMapping("/private/user/category")
     public ResponseEntity<CategoryDTO> createCategory(@AuthenticationPrincipal Jwt jwt, @RequestBody CategoryDTO categoryDTO){
 
@@ -126,10 +125,8 @@ public class UserController {
         User user = service.getUserService().findUserByUid(uid);
         if(user != null){
             Category category = mapper.getCategoryDTOToCategoryMapper().categoryDTOToCategory(categoryDTO);
-            //category.setUser(user);
-            category.getUsers().add(user);
+            category.setUser(user);
             Category newCategory = service.getCategoryService().create(category);
-            user.getCategories().add(newCategory);
             CategoryDTO newCategoryDTO = mapper.getCategoryToCategoryDTOMapper().categoryToCategoryDTO(newCategory);
 
             return ResponseEntity.ok(newCategoryDTO);
@@ -162,6 +159,7 @@ public class UserController {
             Category category = service.getCategoryService().findById(id);
             Collection<Expense> expenses = category.getExpenses();
             expenses.forEach(expense -> service.getExpenseService().deleteById(expense.getId()));
+            user.getCategories().remove(category);
             service.getCategoryService().deleteById(id);
             return ResponseEntity.noContent().build();
         }
