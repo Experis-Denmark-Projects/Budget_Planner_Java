@@ -21,11 +21,8 @@ public abstract class CategoryDTOToCategoryMapper {
 
     @Autowired
     IExpenseService expenseService;
-    @Autowired
-    IUserService userService;
 
-    //@Mapping(target = "user.id", source = "user")
-
+    @Mapping(target = "user.id", source = "user")
     @Mapping(target = "expenses", qualifiedByName = "expenseIdsToExpenses")
     public abstract Category categoryDTOToCategory(CategoryDTO categoryDTO);
 
@@ -33,11 +30,5 @@ public abstract class CategoryDTOToCategoryMapper {
     public Set<Expense> mapExpenseIdsToExpenses(Collection<Integer> expenseIds){
         if(expenseIds == null) return null;
         return expenseIds.stream().map(expenseService::findById).collect(Collectors.toSet());
-    }
-
-    @Named("userIdsToUsers")
-    public Set<User> mapUserIdsToUsers(Set<Integer> userIds){
-        if(userIds == null ) return new HashSet<>();
-        return  userIds.stream().map(userService::findById).collect(Collectors.toSet());
     }
 }

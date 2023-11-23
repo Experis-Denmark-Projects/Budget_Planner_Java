@@ -1,9 +1,6 @@
 package experisdenmarkprojects.budget_planner.services;
 
-import experisdenmarkprojects.budget_planner.services.interfaces.ICategoryService;
-import experisdenmarkprojects.budget_planner.services.interfaces.IExpenseService;
-import experisdenmarkprojects.budget_planner.services.interfaces.IService;
-import experisdenmarkprojects.budget_planner.services.interfaces.IUserService;
+import experisdenmarkprojects.budget_planner.services.interfaces.*;
 import lombok.Getter;
 
 @org.springframework.stereotype.Service
@@ -13,13 +10,16 @@ public class Service implements IService {
     private final IUserService userService;
     private final ICategoryService categoryService;
     private final IExpenseService expenseService;
+    private final ICategorySharingService categorySharingService;
 
     public Service(IUserService userService,
                    ICategoryService categoryService,
-                   IExpenseService expenseService){
+                   IExpenseService expenseService,
+                   ICategorySharingService categorySharingService){
 
         this.userService = userService;
         this.categoryService = categoryService;
         this.expenseService = expenseService;
+        this.categorySharingService = categorySharingService;
     }
 }

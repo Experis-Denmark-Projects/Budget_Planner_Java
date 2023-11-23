@@ -15,9 +15,13 @@ public class CategorySharing {
     private int id;
 
     @Column
-    private boolean shared;
+    private boolean accepted;
 
     @ManyToOne()
     @JoinColumn(name = "category_id", referencedColumnName = "category_id", nullable = false)
-    private Category category;
+    private Category sharedCategory;
+
+    @ManyToOne()
+    @JoinColumn(name = "shared_with_user_id", referencedColumnName = "user_id", nullable = false)
+    private User sharedWithUser;
 }

@@ -30,4 +30,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private Set<Category> categories;
+
+    @OneToMany(mappedBy = "sharedWithUser")
+    private Set<CategorySharing> sharedCategories;
 }

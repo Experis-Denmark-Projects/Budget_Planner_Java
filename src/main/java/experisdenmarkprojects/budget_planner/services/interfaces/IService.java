@@ -5,4 +5,6 @@ public interface IService {
     IUserService getUserService();
     ICategoryService getCategoryService();
     IExpenseService getExpenseService();
+
+    ICategorySharingService getCategorySharingService();
 }

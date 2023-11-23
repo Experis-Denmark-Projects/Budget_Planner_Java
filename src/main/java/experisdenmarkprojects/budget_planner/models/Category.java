@@ -26,6 +26,6 @@ public class Category {
     @OneToMany(mappedBy = "category")
     private Set<Expense> expenses;
 
-    @OneToMany(mappedBy = "category")
-    private List<CategorySharing> sharings;
+    @OneToMany(mappedBy = "sharedCategory")
+    private Set<CategorySharing> sharedCatgories;
 }

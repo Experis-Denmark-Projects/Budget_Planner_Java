@@ -2,9 +2,11 @@ package experisdenmarkprojects.budget_planner.controllers;
 
 import experisdenmarkprojects.budget_planner.mappers.IMapper;
 import experisdenmarkprojects.budget_planner.models.Category;
+import experisdenmarkprojects.budget_planner.models.CategorySharing;
 import experisdenmarkprojects.budget_planner.models.Expense;
 import experisdenmarkprojects.budget_planner.models.User;
 import experisdenmarkprojects.budget_planner.models.dtos.CategoryDTO;
+import experisdenmarkprojects.budget_planner.models.dtos.CategorySharingDTO;
 import experisdenmarkprojects.budget_planner.models.dtos.ExpenseDTO;
 import experisdenmarkprojects.budget_planner.models.dtos.UserDTO;
 import experisdenmarkprojects.budget_planner.services.interfaces.IService;
@@ -16,6 +18,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/api/v1")
@@ -69,7 +72,7 @@ public class UserController {
     public ResponseEntity<UserDTO> updateUser(@AuthenticationPrincipal Jwt jwt, @RequestBody UserDTO userDTO){
         String uid = jwt.getSubject().split("\\|")[1];
         User user = service.getUserService().findUserByUid(uid);
-        if(user != null){
+        if(user != null && userDTO.getId() == user.getId()){
             user = service.getUserService().update(mapper.getUserDTOToUserMapper().userDTOToUser(userDTO));
             return user != null ? ResponseEntity.noContent().build() : ResponseEntity.badRequest().build();
         }else {
@@ -138,7 +141,7 @@ public class UserController {
     public ResponseEntity<CategoryDTO> updateCategory(@AuthenticationPrincipal Jwt jwt, @RequestBody CategoryDTO categoryDTO){
         String uid = jwt.getSubject().split("\\|")[1];
         User user = service.getUserService().findUserByUid(uid);
-        if(user != null){
+        if(user != null && user.getId() == categoryDTO.getUser()){
             Category category = mapper.getCategoryDTOToCategoryMapper().categoryDTOToCategory(categoryDTO);
             if(category != null){
                 service.getCategoryService().update(category);
@@ -159,6 +162,8 @@ public class UserController {
             Category category = service.getCategoryService().findById(id);
             Collection<Expense> expenses = category.getExpenses();
             expenses.forEach(expense -> service.getExpenseService().deleteById(expense.getId()));
+            Collection<CategorySharing> categorySharings = category.getSharedCatgories();
+            categorySharings.forEach(categorySharing -> service.getCategorySharingService().deleteById(categorySharing.getId()));
             user.getCategories().remove(category);
             service.getCategoryService().deleteById(id);
             return ResponseEntity.noContent().build();
@@ -250,9 +255,79 @@ public class UserController {
     public ResponseEntity<ExpenseDTO> deleteExpense(@AuthenticationPrincipal Jwt jwt, @PathVariable int id){
         String uid = jwt.getSubject().split("\\|")[1];
         User user = service.getUserService().findUserByUid(uid);
-        if(user != null){
+        if(user != null ){
             service.getExpenseService().deleteById(id);
             return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.badRequest().build();
+    }
+
+    /* Category Sharing Controller Mappings */
+    @GetMapping("/private/user/category/category-sharing")
+    public ResponseEntity<Collection<CategorySharingDTO>> getCategorySharing(@AuthenticationPrincipal Jwt jwt){
+        String uid = jwt.getSubject().split("\\|")[1];
+        User user = service.getUserService().findUserByUid(uid);
+        if(user != null ){
+            Collection<CategorySharing> categorySharings = user.getSharedCategories();
+            Collection<CategorySharingDTO> categorySharingDTOS = mapper.getCategorySharingToCategorySharingDTOMapper().categorySharingToCategorySharingDTO(categorySharings);
+            return ResponseEntity.ok(categorySharingDTOS);
+        }
+
+        return ResponseEntity.badRequest().build();
+    }
+
+    @PostMapping("/private/user/category/category-sharing")
+    public ResponseEntity<CategorySharingDTO> createCategorySharing(@AuthenticationPrincipal Jwt jwt, @RequestBody CategorySharingDTO categorySharingDTO){
+        String uid = jwt.getSubject().split("\\|")[1];
+        User user = service.getUserService().findUserByUid(uid);
+        if(user != null && user.getId() == categorySharingDTO.getSharedWithUser()){
+            CategorySharing categorySharing = mapper.getCategorySharingDTOToCategorySharingMapper().categorySharingDTOToCategorySharing(categorySharingDTO);
+            if(categorySharing != null){
+
+                Set<CategorySharing> categorySharings = new HashSet<>(service.getCategorySharingService().findAll());
+
+                boolean exists = categorySharings.contains(categorySharing); // Check if category already exists
+
+                if(!exists){ // Only create new category sharing if not it does not exist
+                    return ResponseEntity.ok(mapper.getCategorySharingToCategorySharingDTOMapper().categorySharingToCategorySharingDTO(service.getCategorySharingService().create(categorySharing)));
+                }
+            }
+        }
+
+        return ResponseEntity.badRequest().build();
+    }
+
+    @PutMapping("/private/user/category/category-sharing")
+    public ResponseEntity<CategorySharingDTO> updateCategorySharing(@AuthenticationPrincipal Jwt jwt, @RequestBody CategorySharingDTO categorySharingDTO){
+        String uid = jwt.getSubject().split("\\|")[1];
+        User user = service.getUserService().findUserByUid(uid);
+        if(user != null && user.getId() == categorySharingDTO.getSharedWithUser()){
+            CategorySharing categorySharing = mapper.getCategorySharingDTOToCategorySharingMapper().categorySharingDTOToCategorySharing(categorySharingDTO);
+            if(categorySharing != null){
+                service.getCategorySharingService().update(categorySharing);
+                return ResponseEntity.noContent().build();
+            }
+        }
+
+        return ResponseEntity.badRequest().build();
+    }
+
+    @DeleteMapping("/private/user/category/category-sharing/{id}")
+    public ResponseEntity<CategorySharingDTO> deleteCategorySharing(@AuthenticationPrincipal Jwt jwt, @PathVariable int id){
+        String uid = jwt.getSubject().split("\\|")[1];
+        User user = service.getUserService().findUserByUid(uid);
+
+        if(user != null){
+
+            CategorySharing categorySharing = service.getCategorySharingService().findById(id);
+            boolean belongsToUser = categorySharing.getSharedCategory().getUser().getId() == user.getId();
+
+            if(belongsToUser){ // Category must belong to authenticated user
+                service.getCategorySharingService().deleteById(id);
+                return ResponseEntity.noContent().build();
+            }
+
         }
 
         return ResponseEntity.badRequest().build();

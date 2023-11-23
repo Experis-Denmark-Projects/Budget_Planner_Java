@@ -5,8 +5,10 @@ public interface IMapper {
     IUserToUserDTOMapper getUserToUserDTOMapper();
     ICategoryToCategoryDTOMapper getCategoryToCategoryDTOMapper();
     IExpenseToExpenseDTOMapper getExpenseToExpenseDTOMapper();
+    ICategorySharingToCategorySharingDTOMapper getCategorySharingToCategorySharingDTOMapper();
 
     UserDTOToUserMapper getUserDTOToUserMapper();
     CategoryDTOToCategoryMapper getCategoryDTOToCategoryMapper();
     ExpenseDTOToExpenseMapper getExpenseDTOToExpenseMapper();
+    CategorySharingDTOToCategorySharingMapper getCategorySharingDTOToCategorySharingMapper();
 }

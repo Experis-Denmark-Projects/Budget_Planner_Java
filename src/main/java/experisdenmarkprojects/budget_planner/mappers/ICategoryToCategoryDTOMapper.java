@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface ICategoryToCategoryDTOMapper {
 
-    //@Mapping(target = "user", source = "user.id")
+    @Mapping(target = "user", source = "user.id")
     @Mapping(target = "expenses", qualifiedByName = "expensesToExpenseIds")
     CategoryDTO categoryToCategoryDTO(Category category);
 
@@ -27,11 +27,5 @@ public interface ICategoryToCategoryDTOMapper {
         if(expenses == null ) return null;
 
         return expenses.stream().map(Expense::getId).collect(Collectors.toSet());
-    }
-
-    @Named(value = "usersToUserIds")
-    default  Set<Integer> mapUsers(Set<User> users){
-        if(users == null) return new HashSet<>();
-        return users.stream().map(User::getId).collect(Collectors.toSet());
     }
 }
