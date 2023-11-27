@@ -15,6 +15,9 @@ public class CategorySharing {
     private int id;
 
     @Column
+    private String sharedUserEmail;
+
+    @Column
     private boolean accepted;
 
     @ManyToOne()

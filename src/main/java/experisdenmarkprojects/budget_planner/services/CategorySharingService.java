@@ -2,6 +2,7 @@ package experisdenmarkprojects.budget_planner.services;
 
 import experisdenmarkprojects.budget_planner.exceptions.CategorySharingNotFoundException;
 import experisdenmarkprojects.budget_planner.models.CategorySharing;
+import experisdenmarkprojects.budget_planner.models.User;
 import experisdenmarkprojects.budget_planner.repositories.ICategorySharingRepository;
 import experisdenmarkprojects.budget_planner.services.interfaces.ICategorySharingService;
 import org.springframework.stereotype.Service;
@@ -40,5 +41,10 @@ public class CategorySharingService implements ICategorySharingService {
     @Override
     public void deleteById(Integer i) {
         categorySharingRepository.deleteById(i);
+    }
+
+    @Override
+    public User getUserByEmail(String email){
+        return categorySharingRepository.getUserByEmail(email);
     }
 }

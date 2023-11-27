@@ -10,4 +10,5 @@ public class CategorySharingDTO {
     private boolean accepted;
     private Integer sharedCategory;
     private Integer sharedWithUser;
+    private String sharedUserEmail;
 }
