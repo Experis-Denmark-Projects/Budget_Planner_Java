@@ -20,7 +20,6 @@ public class CustomDateDeserializer extends JsonDeserializer<Date> {
         try {
             return dateFormat.parse(p.getValueAsString());
         }catch (ParseException e){
-            System.out.println("Angular Date: " + p.getValueAsString());
             throw new IOException("Error Parsing date", e);
         }
     }

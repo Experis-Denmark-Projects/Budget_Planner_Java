@@ -105,6 +105,8 @@ public class UserController {
         if(user != null){
             Collection<Category> categories = user.getCategories();
             if(categories != null){
+                List<Category> sortedCategories = new ArrayList<>(categories);
+
                 return ResponseEntity.ok(mapper.getCategoryToCategoryDTOMapper().categoryToCategoryDTO(categories));
             }
         }
@@ -128,7 +130,6 @@ public class UserController {
 
     @PostMapping("/private/user/category")
     public ResponseEntity<CategoryDTO> createCategory(@AuthenticationPrincipal Jwt jwt, @RequestBody CategoryDTO categoryDTO){
-
         String uid = jwt.getSubject().split("\\|")[1];
         User user = service.getUserService().findUserByUid(uid);
         if(user != null){
@@ -309,7 +310,6 @@ public class UserController {
         User user = service.getUserService().findUserByUid(uid);
         if(user != null){
             CategorySharing categorySharing = mapper.getCategorySharingDTOToCategorySharingMapper().categorySharingDTOToCategorySharing(categorySharingDTO);
-            System.out.println(categorySharing.getSharedCategory().getUser() == null);
             if(categorySharing != null && (user.getId() == categorySharingDTO.getSharedWithUser() || user.getId() == categorySharing.getSharedCategory().getUser().getId())){
                 service.getCategorySharingService().update(categorySharing);
                 return ResponseEntity.noContent().build();

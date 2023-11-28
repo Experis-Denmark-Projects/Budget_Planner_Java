@@ -23,4 +23,5 @@ public class CategoryDTO {
     @JsonDeserialize(using = CustomDateDeserializer.class)
     private Date lastModified;
     private Set<Integer> expenses;
+    private Set<Integer> sharedCategories;
 }
