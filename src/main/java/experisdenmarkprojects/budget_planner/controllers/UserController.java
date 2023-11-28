@@ -287,7 +287,7 @@ public class UserController {
     public ResponseEntity<CategorySharingDTO> createCategorySharing(@AuthenticationPrincipal Jwt jwt, @RequestBody CategorySharingDTO categorySharingDTO){
         String uid = jwt.getSubject().split("\\|")[1];
         User user = service.getUserService().findUserByUid(uid);
-        if(user != null && user.getId() == categorySharingDTO.getSharedWithUser()){
+        if(user != null){
             User shareWithUser = service.getCategorySharingService().getUserByEmail(categorySharingDTO.getSharedUserEmail());
             CategorySharing categorySharing = mapper.getCategorySharingDTOToCategorySharingMapper().categorySharingDTOToCategorySharing(categorySharingDTO);
             if(categorySharing != null && shareWithUser != null){
