@@ -27,7 +27,7 @@ import static com.nimbusds.jose.shaded.gson.internal.bind.util.ISO8601Utils.form
 
 @RestController
 @RequestMapping(path = "/api/v1")
-@CrossOrigin(value = {"http://localhost:4200", "https://budget-planner-app.azurewebsites.net"})
+@CrossOrigin(value = {"http://localhost:4200", "http://localhost:80"})
 public class UserController {
     private final IService service;
     private final IMapper mapper;

@@ -21,9 +21,7 @@ services:
       - "DB_SEED=always"
       - "SPRING_PROFILE=dev"
       - "server.port=8080"
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: alexcool3/budget-planner-api:0.0.1
     network_mode: bridge
     container_name: budget-planner-spring-app
     expose:
@@ -34,3 +32,11 @@ services:
       - postgres
     links:
       - postgres
+
+  #angular-app:
+    #image: alexcool3/budget-planner-app:0.0.1
+    #network_mode: bridge
+    #expose:
+    # - 4200
+    #depends_on:
+    #  - spring-app
